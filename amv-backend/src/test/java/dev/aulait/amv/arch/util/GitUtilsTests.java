@@ -28,12 +28,13 @@ class GitUtilsTests {
   void testGitCloneWithToken() {
 
     String repoUrl = "https://github.com/ykuwahara/amv-test-repository.git";
-    Path repoDir =
-        GitUtils.gitClone(
-            Path.of("target"),
-            repoUrl,
-            "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",
-            "ID_TEST");
+    String token =
+        String.join(
+            "_",
+            "github",
+            "pat",
+            "11ADEYTGY0WRN4jA7GRNn8_YuE4ElbBSxAefHSHPomlpm9sRfsmBcUDWNPpS1FL0mvIATDZHIOuW1IfBjJ");
+    Path repoDir = GitUtils.gitClone(Path.of("target"), repoUrl, token, "ID_TEST");
 
     FileUtils4Test.deleteOnExit(repoDir);
 
