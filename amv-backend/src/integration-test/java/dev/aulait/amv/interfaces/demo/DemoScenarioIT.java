@@ -20,8 +20,13 @@ class DemoScenarioIT {
   CodebaseClient codebaseClient = new CodebaseClient();
 
   @Test
+  @EnabledIf("onCi")
   void test() {
     DemoScenarioFacade.getInstance().runIfNotLoaded();
+  }
+
+  boolean onCi() {
+    return Boolean.parseBoolean(System.getenv("CI"));
   }
 
   boolean isJava11Installed() {
@@ -29,8 +34,12 @@ class DemoScenarioIT {
         || StringUtils.isNotEmpty(JenvUtils.javaHome("11"));
   }
 
+  boolean onCiAndJava11() {
+    return onCi() && isJava11Installed();
+  }
+
   @Test
-  @EnabledIf("isJava11Installed")
+  @EnabledIf("onCiAndJava11")
   void java11GradleMyBatisTest() {
 
     if (TestConfig.getInstance().isUsingContainer()) {
