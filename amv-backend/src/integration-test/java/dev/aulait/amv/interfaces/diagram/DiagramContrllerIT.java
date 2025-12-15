@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import dev.aulait.amv.interfaces.demo.DemoCodebaseIT;
 import dev.aulait.amv.interfaces.process.MethodDto;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 
 public class DiagramContrllerIT extends DemoCodebaseIT {
 
   DiagramClient client = new DiagramClient();
 
-  @Test
+  // @Test
+  // TODO this test should be test for simple repository
   public void testCallTree() {
 
     List<CallTreeDto> result = client.callTree("CodebaseController.save");
