@@ -139,6 +139,7 @@ export interface MethodModel {
   returnType: string;
   qualifiedSignature?: string;
   simpleSignature?: string;
+  unsolvedReason?: string;
   srcUrl?: string;
   dummy: boolean;
   /** @uniqueItems true */
