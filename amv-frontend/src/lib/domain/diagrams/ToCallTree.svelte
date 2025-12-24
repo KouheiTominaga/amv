@@ -1,5 +1,12 @@
+<script lang="ts" module>
+  import CriteriaUtils from '$lib/arch/search/CriteriaUtils';
+
+  export function buildQueryString(partialSignature?: string): string {
+    return CriteriaUtils.encode({ methodCriteria: { text: partialSignature } });
+  }
+</script>
+
 <script lang="ts">
-  import DiagramUtils from '$lib/domain/diagrams/DiagramUtils';
   import { ListTree } from '@lucide/svelte';
 
   interface Props {
@@ -12,7 +19,7 @@
 
 {#if signaturePattern}
   <a
-    href={DiagramUtils.urlToCallTree({ signaturePattern })}
+    href={`/diagrams/call-tree${buildQueryString(signaturePattern)}`}
     data-tooltip={`Open Call Tree for ${signaturePattern}`}
     {onclick}
   >
