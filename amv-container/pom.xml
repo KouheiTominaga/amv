@@ -10,7 +10,7 @@
   <parent>
     <groupId>dev.aulait.amv</groupId>
     <artifactId>amv</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
