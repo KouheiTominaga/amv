@@ -40,12 +40,19 @@
     <db.username>amv</db.username>
     <exec-plugin-version>3.2.0</exec-plugin-version>
 
+    <gpg.skip>true</gpg.skip>
+
     <jackson.version>2.17.1</jackson.version>
 
     <javaparser.version>3.27.1</javaparser.version>
 
     <lombok.version>1.18.40</lombok.version>
+
     <maven.compiler.release>21</maven.compiler.release>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.source.skip>true</maven.source.skip>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <properties-maven-plugin.version>1.2.1</properties-maven-plugin.version>
 
@@ -53,9 +60,14 @@
     <quarkus.container-image.name>amv</quarkus.container-image.name>
     <quarkus.container-image.tag>latest</quarkus.container-image.tag>
 
+    <skipPublishing>true</skipPublishing>
+
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <sonar.coverage.exclusions>amv-e2etest/**,amv-generator/**</sonar.coverage.exclusions>
   </properties>
+
+
+  <!-- Build Settings -->
   <build>
     <pluginManagement>
       <plugins>
@@ -90,6 +102,43 @@
       </plugins>
     </pluginManagement>
   </build>
+
+
+  <!-- More Project Information -->
+  <name>AMV</name>
+  <description>Application Metadata Visualizer</description>
+  <url>https://aulait.dev</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>yuichi.kuwahara</id>
+      <name>Yuichi Kuwahara</name>
+      <email>yuichi.kuwahara.0@gmail.com</email>
+    </developer>
+  </developers>
+
+
+  <!-- Environment Settings -->
+  <scm>
+    <connection>scm:git:git//github.com/project-au-lait/amv.git</connection>
+    <developerConnection>scm:git:git//github.com/project-au-lait/amv.git</developerConnection>
+    <url>https://github.com/project-au-lait/amv.git</url>
+  </scm>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>github</id>
+      <name>GitHub Project Au Lait Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/project-au-lait/amv</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 
   <profiles>
     <profile>
@@ -136,6 +185,82 @@
         <db.port>5430</db.port>
         <db.schema>amv</db.schema>
       </properties>
+    </profile>
+
+    <profile>
+      <id>release</id>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.4.0</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.12.0</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.8</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>maven-central</id>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.9.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>false</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 

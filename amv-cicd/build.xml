@@ -9,9 +9,15 @@
   </condition>
 
 
-  <target name="test">
+  <target name="deploy">
     <condition property="analyze.profile" value=",analyze" else="">
       <equals arg1="${analyze}" arg2="true" />
+    </condition>
+
+    <condition property="maven-central" value=",maven-central" else="">
+      <not>
+        <matches pattern="-SNAPSHOT$" string="${project.version}" />
+      </not>
     </condition>
 
     <exec executable="${mvn.cmd}" failonerror="true">
@@ -23,7 +29,7 @@
     <trycatch>
       <try>
         <exec executable="${mvn.cmd}" dir="${prjdir}" failonerror="true">
-          <arg line="-T 1C clean install -P setup${analyze.profile}" />
+          <arg line="-T 1C clean deploy -P setup,release${maven-central}${analyze.profile}" />
           <arg line="-D db.port=${db.port.random} -D backend.port=${backend.port.random}" />
           <arg line="-D org.slf4j.simpleLogger.showThreadName=true" />
         </exec>

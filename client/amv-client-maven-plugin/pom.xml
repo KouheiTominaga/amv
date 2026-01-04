@@ -35,6 +35,14 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <gpg.skip>false</gpg.skip>
+    <maven.deploy.skip>false</maven.deploy.skip>
+    <maven.javadoc.skip>false</maven.javadoc.skip>
+    <maven.source.skip>false</maven.source.skip>
+    <skipPublishing>false</skipPublishing>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
