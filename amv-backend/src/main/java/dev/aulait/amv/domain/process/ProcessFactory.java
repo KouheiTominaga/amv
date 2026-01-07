@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ProcessFactory {
 
+  private final Map<String, FlowStatementEntity> flowStatementCache = new HashMap<>();
+
   public SourceFileAggregate build(SourceFdo source) {
     SourceFileAggregate aggregate = new SourceFileAggregate();
 
@@ -203,6 +205,18 @@ public class ProcessFactory {
   }
 
   FlowStatementEntity f2e(FlowStatementFdo flowStatementF, MethodEntity methodE) {
+
+    String uniqueKey =
+        methodE.getId().getTypeId()
+            + ":"
+            + methodE.getId().getSeqNo()
+            + ":"
+            + System.identityHashCode(flowStatementF);
+
+    if (flowStatementCache.containsKey(uniqueKey)) {
+      return flowStatementCache.get(uniqueKey);
+    }
+
     FlowStatementEntity entity = new FlowStatementEntity();
     entity.setId(ShortUuidUtils.generate());
     entity.setKind(flowStatementF.getKind());
@@ -214,6 +228,8 @@ public class ProcessFactory {
       FlowStatementEntity parent = f2e(flowStatementF.getParent(), methodE);
       entity.setFlowStatement(parent);
     }
+
+    flowStatementCache.put(uniqueKey, entity);
 
     return entity;
   }

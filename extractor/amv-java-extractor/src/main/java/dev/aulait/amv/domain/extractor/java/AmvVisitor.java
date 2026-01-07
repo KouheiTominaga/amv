@@ -6,7 +6,12 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.MethodReferenceExpr;
+import com.github.javaparser.ast.stmt.CatchClause;
+import com.github.javaparser.ast.stmt.ForEachStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import dev.aulait.amv.domain.extractor.fdo.FieldFdo;
 import dev.aulait.amv.domain.extractor.fdo.FlowStatementFdo;
@@ -105,15 +110,103 @@ public class AmvVisitor extends VoidVisitorAdapter<AmvVisitorContext> {
 
   @Override
   public void visit(IfStmt n, AmvVisitorContext context) {
-    FlowStatementFdo newFlowStatement = converter.convert(n);
+    FlowStatementFdo ifFlow = converter.convert(n);
 
-    FlowStatementFdo currentFlowStatement = context.getCurrentFlowStatement();
-    if (currentFlowStatement != null) {
-      newFlowStatement.setParent(currentFlowStatement);
+    FlowStatementFdo parent = context.getCurrentFlowStatement();
+    if (parent != null) {
+      ifFlow.setParent(parent);
     }
 
-    context.pushFlowStatement(newFlowStatement);
+    context.pushFlowStatement(ifFlow);
+    n.getThenStmt().accept(this, context);
+    context.popFlowStatement();
+
+    n.getElseStmt()
+        .ifPresent(
+            elseStmt -> {
+              if (elseStmt.isIfStmt()) {
+                elseStmt.asIfStmt().accept(this, context);
+              } else {
+                FlowStatementFdo elseFlow = converter.convert(elseStmt);
+                if (context.getCurrentFlowStatement() != null) {
+                  elseFlow.setParent(context.getCurrentFlowStatement());
+                }
+                context.pushFlowStatement(elseFlow);
+                elseStmt.accept(this, context);
+                context.popFlowStatement();
+              }
+            });
+  }
+
+  @Override
+  public void visit(ForStmt n, AmvVisitorContext context) {
+    FlowStatementFdo forFlow = converter.convert(n);
+
+    FlowStatementFdo parent = context.getCurrentFlowStatement();
+    if (parent != null) {
+      forFlow.setParent(parent);
+    }
+
+    context.pushFlowStatement(forFlow);
     super.visit(n, context);
     context.popFlowStatement();
+  }
+
+  @Override
+  public void visit(ForEachStmt n, AmvVisitorContext context) {
+    FlowStatementFdo forFlowStatement = converter.convert(n);
+    FlowStatementFdo currentFlowStatement = context.getCurrentFlowStatement();
+    if (currentFlowStatement != null) {
+      forFlowStatement.setParent(currentFlowStatement);
+    }
+
+    context.pushFlowStatement(forFlowStatement);
+    super.visit(n, context);
+    context.popFlowStatement();
+  }
+
+  @Override
+  public void visit(ReturnStmt n, AmvVisitorContext context) {
+    FlowStatementFdo returnFlow = converter.convert(n);
+    FlowStatementFdo currentFlowStatement = context.getCurrentFlowStatement();
+    if (currentFlowStatement != null) {
+      returnFlow.setParent(currentFlowStatement);
+    }
+
+    context.pushFlowStatement(returnFlow);
+    super.visit(n, context);
+    context.popFlowStatement();
+  }
+
+  @Override
+  public void visit(TryStmt n, AmvVisitorContext context) {
+    FlowStatementFdo tryFlow = converter.convert(n);
+    context.pushFlowStatement(tryFlow);
+
+    n.getTryBlock().accept(this, context);
+    super.visit(n, context);
+    context.popFlowStatement();
+
+    for (CatchClause cc : n.getCatchClauses()) {
+      FlowStatementFdo catchFlow = converter.convert(cc);
+      catchFlow.setParent(tryFlow);
+      context.pushFlowStatement(catchFlow);
+
+      super.visit(n, context);
+      cc.getBody().accept(this, context);
+      context.popFlowStatement();
+    }
+
+    n.getFinallyBlock()
+        .ifPresent(
+            fb -> {
+              FlowStatementFdo finallyFlow = converter.convert(fb);
+              finallyFlow.setParent(tryFlow);
+              context.pushFlowStatement(finallyFlow);
+
+              super.visit(n, context);
+              fb.accept(this, context);
+              context.popFlowStatement();
+            });
   }
 }
