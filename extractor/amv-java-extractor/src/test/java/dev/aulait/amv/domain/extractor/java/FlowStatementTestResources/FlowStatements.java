@@ -1,5 +1,8 @@
 package dev.aulait.amv.domain.extractor.java.FlowStatementTestResources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FlowStatements {
 
   public void flowStatement() {
@@ -9,12 +12,6 @@ public class FlowStatements {
     } else if (flg) {
       innerMethod();
     } else {
-      innerMethod();
-    }
-  }
-
-  public void forStatement() {
-    for (int cnt = 0; cnt < 2; cnt++) {
       innerMethod();
     }
   }
@@ -29,6 +26,17 @@ public class FlowStatements {
 
   public String returnStatement() {
     return innerRtnMethod();
+  }
+
+  public void forEachStatement() {
+    List<Integer> list = new ArrayList<>();
+    for (int i = 1; i <= 10; i++) {
+      list.add(i);
+    }
+
+    for (Integer num : list) {
+      System.out.println(num);
+    }
   }
 
   private String innerRtnMethod() {

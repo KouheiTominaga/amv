@@ -66,22 +66,30 @@ class FlowStatementTests {
   }
 
   @Test
-  void for_test() {
+  void forEach_test() {
     Path sourceFile = ResourceUtils.res2path(this, "FlowStatements.java");
 
     SourceFdo source = extractor.extract(sourceFile).orElseThrow();
 
     MethodFdo method =
         source.getTypes().get(0).getMethods().stream()
-            .filter(m -> "forStatement".equals(m.getName()))
+            .filter(m -> "forEachStatement".equals(m.getName()))
             .findFirst()
             .orElseThrow();
 
-    FlowStatementFdo flowStatement = method.getMethodCalls().get(0).getFlowStatement();
+    for (MethodCallFdo call : method.getMethodCalls()) {
+      FlowStatementFdo flowStatement = call.getFlowStatement();
 
-    assertEquals(FlowStatementKind.FOR.code(), flowStatement.getKind());
-    assertEquals("cnt < 2", flowStatement.getContent());
-    assertEquals(12, flowStatement.getLineNo());
+      if ("i <= 10".equals(flowStatement.getContent())) {
+        assertEquals(FlowStatementKind.FOR.code(), flowStatement.getKind());
+        assertEquals("i <= 10", flowStatement.getContent());
+        assertEquals(39, flowStatement.getLineNo());
+      } else if ("Integer num : list".equals(flowStatement.getContent())) {
+        assertEquals(FlowStatementKind.FOR.code(), flowStatement.getKind());
+        assertEquals("Integer num : list", flowStatement.getContent());
+        assertEquals(43, flowStatement.getLineNo());
+      }
+    }
   }
 
   @Test
