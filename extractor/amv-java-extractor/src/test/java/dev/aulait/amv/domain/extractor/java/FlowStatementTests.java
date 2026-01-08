@@ -42,7 +42,7 @@ class FlowStatementTests {
 
     assertEquals(FlowStatementKind.IF.code(), ifFs.getKind());
     assertEquals("flg", ifFs.getContent());
-    assertEquals(7, ifFs.getLineNo());
+    assertEquals(10, ifFs.getLineNo());
 
     FlowStatementFdo elseIfFs =
         flowStatements.stream()
@@ -52,7 +52,7 @@ class FlowStatementTests {
 
     assertEquals(FlowStatementKind.ELSE_IF.code(), elseIfFs.getKind());
     assertEquals("flg", elseIfFs.getContent());
-    assertEquals(9, elseIfFs.getLineNo());
+    assertEquals(12, elseIfFs.getLineNo());
 
     FlowStatementFdo elseFs =
         flowStatements.stream()
@@ -62,7 +62,7 @@ class FlowStatementTests {
 
     assertEquals(FlowStatementKind.ELSE.code(), elseFs.getKind());
     assertEquals("else", elseFs.getContent());
-    assertEquals(11, elseFs.getLineNo());
+    assertEquals(14, elseFs.getLineNo());
   }
 
   @Test
@@ -83,11 +83,11 @@ class FlowStatementTests {
       if ("i <= 10".equals(flowStatement.getContent())) {
         assertEquals(FlowStatementKind.FOR.code(), flowStatement.getKind());
         assertEquals("i <= 10", flowStatement.getContent());
-        assertEquals(39, flowStatement.getLineNo());
+        assertEquals(33, flowStatement.getLineNo());
       } else if ("Integer num : list".equals(flowStatement.getContent())) {
         assertEquals(FlowStatementKind.FOR.code(), flowStatement.getKind());
         assertEquals("Integer num : list", flowStatement.getContent());
-        assertEquals(43, flowStatement.getLineNo());
+        assertEquals(37, flowStatement.getLineNo());
       }
     }
   }
@@ -117,7 +117,7 @@ class FlowStatementTests {
             .orElseThrow();
 
     assertEquals("try", tryFs.getContent());
-    assertEquals(18, tryFs.getLineNo());
+    assertEquals(20, tryFs.getLineNo());
 
     FlowStatementFdo catchFs =
         flowStatements.stream()
@@ -126,7 +126,7 @@ class FlowStatementTests {
             .orElseThrow();
 
     assertEquals("catch (Exception e)", catchFs.getContent());
-    assertEquals(20, catchFs.getLineNo());
+    assertEquals(22, catchFs.getLineNo());
   }
 
   @Test
@@ -145,6 +145,6 @@ class FlowStatementTests {
 
     assertEquals(FlowStatementKind.RETURN.code(), flowStatement.getKind());
     assertEquals("innerRtnMethod()", flowStatement.getContent());
-    assertEquals(31, flowStatement.getLineNo());
+    assertEquals(28, flowStatement.getLineNo());
   }
 }
